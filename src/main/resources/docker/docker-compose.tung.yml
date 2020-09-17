@@ -1,0 +1,29 @@
+version: '3.5'
+
+services:
+  db_ceb:
+    image: postgres:10.1-alpine
+    volumes:
+      - ./database/pg:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: ceb
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+    networks:
+      - reverse-proxy
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    expose:
+      - 6379
+    volumes:
+      - ./database/redis-data:/data
+    networks:
+      - reverse-proxy
+networks:
+  reverse-proxy:
+    external: true
