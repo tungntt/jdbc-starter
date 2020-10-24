@@ -1,8 +1,13 @@
 package vn.tungnt.jdbc.starter.service.profile.impl;
 
+import org.postgresql.core.SqlCommand;
 import vn.tungnt.jdbc.starter.config.DatasourceConfiguration;
+import vn.tungnt.jdbc.starter.config.OtherDatasource;
+import vn.tungnt.jdbc.starter.repository.profile.ProfileRepository;
+import vn.tungnt.jdbc.starter.repository.profile.impl.ProfileRepositoryImpl;
 import vn.tungnt.jdbc.starter.service.profile.ProfileService;
 
+import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,11 +19,16 @@ import java.util.Objects;
 
 public class ProfileServiceImpl implements ProfileService {
 
+    private final ProfileRepository profileRepository;
+
+    public ProfileServiceImpl() {
+        this.profileRepository = new ProfileRepositoryImpl();
+    }
+
     public List<String> getAllProfileNames() {
         final String query = "SELECT display_name FROM user_profile_profile";
-        Connection connection = DatasourceConfiguration.getDatasource().getConnection();
-        try(Statement statement = connection.createStatement()) {
-            final ResultSet resultSet = statement.executeQuery(query);
+        final ResultSet resultSet = this.profileRepository.allProfiles(query);
+        try {
             if (Objects.isNull(resultSet)) {
                 return Collections.emptyList();
             } else {
@@ -28,10 +38,10 @@ public class ProfileServiceImpl implements ProfileService {
                 }
                 return results;
             }
+        } catch (SQLException sqlE) {
 
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
         }
+
         return Collections.emptyList();
     }
 }
